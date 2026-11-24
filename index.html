@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#173d32">
+<link rel="manifest" href="manifest.webmanifest">
+<title>রাজু হোসাইনের My Garments হিসাব</title>
+<style>
+:root{--green:#173d32;--mint:#e8f3ed;--bg:#f4f7f5;--ink:#17231e;--muted:#66756d;--line:#dce6df;--white:#fff;--red:#a52b2b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans Bengali",sans-serif}
+header{background:var(--green);color:white;padding:20px 16px 18px}header h1{font-size:22px;margin:0 0 4px}header p{margin:0;color:#d5e6dc;font-size:13px}
+main{max-width:850px;margin:auto;padding:14px}
+nav{display:flex;gap:8px;overflow:auto;margin:0 0 14px}
+nav button,.btn{border:0;border-radius:10px;padding:11px 14px;background:var(--green);color:white;font-weight:650;cursor:pointer}
+nav button{white-space:nowrap;background:#e1ebe5;color:var(--green)}nav button.active{background:var(--green);color:white}
+.card{background:white;border:1px solid var(--line);border-radius:15px;padding:15px;margin-bottom:13px;box-shadow:0 2px 8px #183c2c08}
+h2{font-size:18px;margin:0 0 12px}.muted{color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+label{display:block;font-size:13px;color:#405148;margin:0 0 5px}
+input,select{width:100%;padding:11px;border:1px solid #cbd8cf;border-radius:9px;font:inherit;background:#fff;color:var(--ink)}
+.field{margin-bottom:11px}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.stat{background:var(--mint);padding:12px;border-radius:11px}.stat small{display:block;color:var(--muted)}.stat strong{font-size:22px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.secondary{background:#e7eee9;color:var(--green)}.danger{background:#f8e8e8;color:var(--red)}
+.item{border:1px solid var(--line);border-radius:11px;padding:12px;margin:9px 0;background:#fff}
+.item h3{margin:0 0 5px;font-size:16px}.item p{margin:3px 0;color:var(--muted);font-size:13px}
+table{border-collapse:collapse;width:100%;font-size:13px}td,th{padding:9px 7px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted)}
+.hidden{display:none!important}.notice{padding:10px;background:#fff7dc;border-radius:9px;font-size:13px;color:#6c5412}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:16px}
+@media(min-width:600px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.stats{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<header><h1>🏭 রাজু হোসাইনের My Garments হিসাব</h1><p>Owner: রাজু হোসাইন • Daily Production • Offline</p></header>
+<main>
+<nav>
+<button class="active" data-tab="dashboard">ড্যাশবোর্ড</button>
+<button data-tab="orders">অর্ডার / স্টাইল</button>
+<button data-tab="entry">দৈনিক এন্ট্রি</button>
+<button data-tab="report">রিপোর্ট</button>
+<button data-tab="backup">ব্যাকআপ</button>
+</nav>
+
+<section id="dashboard">
+<div class="card"><h2>সার্বিক হিসাব</h2><div class="stats" id="overallStats"></div></div>
+<div class="card"><h2>সাম্প্রতিক অর্ডার</h2><div id="recentOrders"></div></div>
+<div class="notice">তথ্য এই মোবাইল/ব্রাউজারেই সংরক্ষিত থাকে। অ্যাপের ডেটা মুছে ফেলবেন না; নিয়মিত ব্যাকআপ নিন।</div>
+</section>
+
+<section id="orders" class="hidden">
+<div class="card">
+<h2 id="orderFormTitle">নতুন অর্ডার / স্টাইল যোগ করুন</h2>
+<form id="orderForm">
+<input type="hidden" id="orderId">
+<div class="grid">
+<div class="field"><label>Buyer Name *</label><input id="buyer" required></div>
+<div class="field"><label>Style Number *</label><input id="style" required></div>
+<div class="field"><label>Color</label><input id="color"></div>
+<div class="field"><label>Season / সিজন</label><input id="season"></div>
+<div class="field"><label>Group Name</label><input id="group"></div>
+<div class="field"><label>Order Quantity</label><input id="quantity" type="number" min="0" value="0"></div>
+</div>
+<div class="actions"><button class="btn" type="submit">অর্ডার সংরক্ষণ</button><button class="btn secondary" type="button" id="cancelEdit">পরিষ্কার</button></div>
+</form></div>
+<div class="card"><h2>অর্ডার তালিকা</h2><div id="orderList"></div></div>
+</section>
+
+<section id="entry" class="hidden">
+<div class="card"><h2>দৈনিক প্রোডাকশন এন্ট্রি</h2>
+<form id="entryForm">
+<div class="field"><label>অর্ডার / স্টাইল নির্বাচন *</label><select id="entryOrder" required><option value="">অর্ডার নির্বাচন করুন</option></select></div>
+<div class="grid">
+<div class="field"><label>তারিখ *</label><input id="entryDate" type="date" required></div>
+<div class="field"><label>Daily Input</label><input id="dailyInput" type="number" min="0" value="0"></div>
+<div class="field"><label>Daily Assembly</label><input id="dailyAssembly" type="number" min="0" value="0"></div>
+<div class="field"><label>Daily Output</label><input id="dailyOutput" type="number" min="0" value="0"></div>
+</div>
+<div class="actions"><button class="btn" type="submit">দিনের হিসাব সংরক্ষণ</button></div>
+<p class="muted">একই তারিখে একাধিকবার এন্ট্রি করলে সেগুলো আলাদা রেকর্ড হিসেবে যোগ হবে।</p>
+</form></div>
+<div class="card"><h2>সাম্প্রতিক দৈনিক এন্ট্রি</h2><div id="entryList"></div></div>
+</section>
+
+<section id="report" class="hidden">
+<div class="card"><h2>অর্ডারভিত্তিক টোটাল রিপোর্ট</h2>
+<div class="field"><label>অর্ডার নির্বাচন করুন</label><select id="reportOrder"><option value="">সব অর্ডার</option></select></div>
+<div id="reportSummary"></div>
+</div>
+<div class="card"><h2>দৈনিক রেকর্ড</h2><div id="reportEntries"></div></div>
+</section>
+
+<section id="backup" class="hidden">
+<div class="card"><h2>ডেটা ব্যাকআপ ও পুনরুদ্ধার</h2>
+<p class="muted">JSON ব্যাকআপে অর্ডার ও দৈনিক হিসাব একসঙ্গে থাকবে। নতুন ফোনে নিতে ব্যাকআপ ফাইলটি ডাউনলোড করে রাখুন।</p>
+<div class="actions"><button class="btn" id="exportJson">সম্পূর্ণ ব্যাকআপ ডাউনলোড</button><button class="btn secondary" id="exportCsv">CSV রিপোর্ট ডাউনলোড</button></div>
+<div class="field" style="margin-top:14px"><label>ব্যাকআপ ফাইল থেকে ফিরিয়ে আনুন</label><input type="file" id="importFile" accept=".json,application/json"></div>
+<p class="notice">পুনরুদ্ধার করলে বর্তমান ডেটার সঙ্গে ব্যাকআপের ডেটা যোগ হবে। একই ID থাকলে পুরোনো রেকর্ড বদলাবে না।</p>
+</div>
+<div class="card"><h2>অ্যাপ সম্পর্কে</h2><p>রাজু হোসাইনের My Garments হিসাব — ব্যক্তিগত উৎপাদন হিসাবের জন্য। ডেটা ডিফল্টভাবে এই ডিভাইসেই থাকে; কোনো সার্ভারে স্বয়ংক্রিয়ভাবে পাঠানো হয় না।</p></div>
+</section>
+<footer>রাজু হোসাইন • My Garments হিসাব • আপনার হিসাব, আপনার নিয়ন্ত্রণে</footer>
+</main>
+<script src="app.js"></script>
+</body></html>
